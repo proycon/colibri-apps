@@ -15,7 +15,7 @@ def safe(s):
 
 def processrelations(type, func,  pattern, threshold, nodes, edges, classdecoder, colors, relationtypes="",secondorderedges=False):
     if not relationtypes or type in relationtypes:
-        for pattern2, count in func(pattern):
+        for pattern2, count in func(pattern, threshold):
             nodeid= safe(type + pattern2.tostring(classdecoder))
             if not nodeid in nodes:
                 nodes[nodeid] =  [nodeid, pattern2, count,type]
@@ -112,10 +112,10 @@ g = {
                 else:
                     e = ""
                 size = count
-                jscode += " g.edges.push({id: '" + s_edgeid + "', source: '" +s_from  + "', target: '" +s_to  + "' ,size:" + str(size) + ", 'color':'" + color + "'" + e + "});\n"
+                jscode += " g.edges.push({id: '" + s_edgeid + "', type: 'arrow',  source: '" +s_from  + "', target: '" +s_to  + "' ,size:" + str(size) + ", 'color':'" + color + "'" + e + " });\n"
 
             jscode += "s = new sigma({graph: g, container: 'graph'});"
-            jscode += "s.startForceAtlas2({startingIterations: 5, iterationsPerRender: 5});\n"
+            jscode += "s.startForceAtlas2({startingIterations: 25, iterationsPerRender: 0});\n"
             jscode += "s.bind('clickNode', function(e) { var q = e.data.node.text.replace('`',\"'\"); window.location.assign('../query/?pattern=' + q );});\n"
             jscode += "window.setTimeout(function(){ s.stopForceAtlas2();}, 10000);\n";
             jscode = "$(document).ready(function(){\n" + jscode + "\n});"
