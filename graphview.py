@@ -117,7 +117,7 @@ g = {
                 else:
                     jscode += " g.edges.push({id: '" + s_edgeid + "', type: 'arrow',  source: '" +s_from  + "', target: '" +s_to  + "' ,size:" + str(size) + ", 'color':'" + color + "'" + e + " });\n"
 
-            jscode += "sigma.settings.labelThreshold = 6;\n";
+            jscode += "sigma.settings.labelThreshold = 4;\n";
             jscode += "sigma.settings.minNodeSize = " + str(minnodesize) + ";\n";
             jscode += "sigma.settings.maxNodeSize = " + str(maxnodesize) + ";\n";
             jscode += "sigma.settings.minEdgeSize = " + str(minedgesize) + ";\n";
