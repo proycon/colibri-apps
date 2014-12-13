@@ -10,10 +10,10 @@ filter = "";
 function showsuggestions(leftcontext, prefix) {
     s = "<span id=\"context\">" + leftcontext + "</span> <ol>";
     for (var i = 0; i < candidates.length; i++) {
-        p = Math.round(candidates[i].count / count);
+        //p = Math.round(candidates[i].count / count);
         s += "<li class=\"candidate\" id=\"candidate" + (i +1) + "\">" + candidates[i].text;
-        if (p > 1) {
-            s += " <span>["+candidates[i].count+"%]</span>";
+        if (i < 9) {
+            s += " <span>" + (i + 1) + "</span>";
         }
         s += "</li>";
         if (i > 20) break;
@@ -127,9 +127,11 @@ $(document).ready(function() {
                 select = event.keyCode - 48;
             }
             selectsuggestion();
-            acceptsuggestion(String.fromCharCode(event.keyCode));
+            acceptsuggestion();
             mode = 0;
             if ((event.keyCode >= 49) && (event.keyCode <= 57)) {
+                var sel = $("#textinput").getSelection(); //current cursor position is an empty selection
+                $('#textinput').insertText( " ", sel.end, "collapseToEnd");
                 event.preventDefault();
                 return false;
             }
