@@ -171,3 +171,11 @@ textarea#textinput {
     margin: 2px;
 }
 
+
+#suggestions ol li span {
+    font-style: italic;
+}
+
+span#help {
+    font-style: italic;
+}

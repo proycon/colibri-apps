@@ -10,7 +10,12 @@ filter = "";
 function showsuggestions(leftcontext, prefix) {
     s = "<span id=\"context\">" + leftcontext + "</span> <ol>";
     for (var i = 0; i < candidates.length; i++) {
-        s += "<li class=\"candidate\" id=\"candidate" + (i +1) + "\">" + candidates[i].text + " <span>["+candidates[i].count+"]</span></li>";
+        p = Math.round(candidates[i].count / count);
+        s += "<li class=\"candidate\" id=\"candidate" + (i +1) + "\">" + candidates[i].text;
+        if (p > 1) {
+            s += " <span>["+candidates[i].count+"%]</span>";
+        }
+        s += "</li>";
         if (i > 20) break;
     }
     s += "</ol>";
@@ -42,9 +47,10 @@ function getcontext() {
     //prune leftcontext until the first spacing/punctuation char so we don't
     //have half-finished words at the beginning
     var begin = 0;
-    for (var i = 0; i < 0; i++) {
+    for (var i = 0; i < leftcontext.length; i++) {
         if ($.inArray(leftcontext.charAt(i), stopchars) != -1) {
-            begin = i + 1
+            begin = i + 1;
+            break;
         }
     }
     leftcontext = leftcontext.substr(begin);

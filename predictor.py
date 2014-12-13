@@ -52,11 +52,14 @@ class Predictor:
 
                 #get patterns to the right
                 i = 0
-                for pattern, count in sorted( self.patternmodel.getrightneighbours(leftcontext, args.threshold), key= lambda x: -1 * x[1] ):
-                    patternstring = pattern.tostring(self.classdecoder)
-                    if i < MAXCANDIDATES and (not filter or patternstring.startswith(filter)):
-                        response['candidates'].append( ( patternstring, count ) )
-                        i += 1
+                try:
+                    for pattern, count in sorted( self.patternmodel.getrightneighbours(leftcontext, args.threshold), key= lambda x: -1 * x[1] ):
+                        patternstring = pattern.tostring(self.classdecoder)
+                        if i < MAXCANDIDATES and (not filter or patternstring.startswith(filter)):
+                            response['candidates'].append( ( patternstring, count ) )
+                            i += 1
+                except KeyError:
+                    pass
 
                 if not response['candidates']:
                     found = False
