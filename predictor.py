@@ -16,11 +16,12 @@ MAXCANDIDATES = 100
 
 
 class Predictor:
-    def __init__(self, patternmodel, corpus, classdecoder, classencoder):
+    def __init__(self, patternmodel, corpus, classdecoder, classencoder, title=""):
         self.patternmodel = patternmodel
         self.corpus = corpus
         self.classdecoder = classdecoder
         self.classencoder = classencoder
+        self.title = title
 
     def query(self, leftcontext, filter=""):
         response = {'count':0, 'candidates':[]}
@@ -85,7 +86,7 @@ class Predictor:
     @cherrypy.expose
     def index(self):
         template = templates.get_template('predictor.html')
-        return template.render()
+        return template.render(title=self.title)
 
 
 if __name__ == "__main__":
@@ -97,6 +98,7 @@ if __name__ == "__main__":
     parser.add_argument('-l','--maxlength',type=int,help="Maximum pattern length (value only has an effect if lower than the length with which the model was built)", action='store',default=10,required=False)
     parser.add_argument('-i','--stdin', help="No webserver, read from stdin", action='store_true',default=False,required=False)
     parser.add_argument('-p','--port',type=int, help="Webserver port", action='store',default=8080,required=False)
+    parser.add_argument('--title',type=str,help="An extra title to show", action='store',default="",required=False)
     args = parser.parse_args()
 
     print("Loading class encoder",file=sys.stderr)
@@ -140,5 +142,5 @@ if __name__ == "__main__":
         }
         def fake_wait_for_occupied_port(host, port): return
         cherrypy.process.servers.wait_for_occupied_port = fake_wait_for_occupied_port
-        cherrypy.quickstart(Predictor(patternmodel, corpus, classdecoder, classencoder), config=config)
+        cherrypy.quickstart(Predictor(patternmodel, corpus, classdecoder, classencoder, args.title), config=config)
 
