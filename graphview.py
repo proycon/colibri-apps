@@ -58,7 +58,7 @@ class Root:
             nodes['center'] = ['center', pattern, self.patternmodel.occurrencecount(pattern),'center' ]
             edges = []
 
-            minnodesize = 1
+            minnodesize = 2
             maxnodesize = 10
             minedgesize = 1
             maxedgesize = 10
@@ -114,6 +114,12 @@ g = {
                 size = count
                 jscode += " g.edges.push({id: '" + s_edgeid + "', type: 'arrow',  source: '" +s_from  + "', target: '" +s_to  + "' ,size:" + str(size) + ", 'color':'" + color + "'" + e + " });\n"
 
+            jscode += "sigma.settings.labelThreshold = 6;\n";
+            jscode += "sigma.settings.minNodeSize = " + str(minnodesize) + ";\n";
+            jscode += "sigma.settings.maxNodeSize = " + str(maxnodesize) + ";\n";
+            jscode += "sigma.settings.minEdgeSize = " + str(minedgesize) + ";\n";
+            jscode += "sigma.settings.maxEdgeSize = " + str(maxedgesize) + ";\n";
+            jscode += "sigma.settings.defaultEdgeType = 'arrow';\n";
             jscode += "s = new sigma({graph: g, container: 'graph'});"
             jscode += "s.startForceAtlas2({startingIterations: 25, iterationsPerRender: 0});\n"
             jscode += "s.bind('clickNode', function(e) { var q = e.data.node.text.replace('`',\"'\"); window.location.assign('../query/?pattern=' + q );});\n"
