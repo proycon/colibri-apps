@@ -13,13 +13,13 @@ def safe(s):
     return s.replace("'","`")
 
 
-def processrelations(type, func,  pattern, threshold, nodes, edges, classdecoder, colors, relationtypes="",secondorderedges=False):
+def processrelations(type, func,  pattern, threshold, nodes, edges, classdecoder, colors, relationtypes="",secondorderedges=False, reverse=False):
     if not relationtypes or type in relationtypes:
         for pattern2, count in func(pattern, threshold):
             nodeid= safe(type + pattern2.tostring(classdecoder))
             if not nodeid in nodes:
                 nodes[nodeid] =  [nodeid, pattern2, count,type]
-            edges.append( [nodeid, pattern, pattern2, type, count] )
+            edges.append( [nodeid, pattern, pattern2, type, count, reverse] )
 
     tmpnodeset = set()
     for nodeid,p,_,_ in nodes.values():
@@ -35,7 +35,7 @@ def processrelations(type, func,  pattern, threshold, nodes, edges, classdecoder
                             nodeid= safe(type + p2.tostring(classdecoder))
                             if not nodeid in nodes:
                                 nodes[nodeid] =  [nodeid, p2, count,type]
-                            edges.append( [nodeid, p, p2, type, count] )
+                            edges.append( [nodeid, p, p2, type, count, False] )
                 except KeyError:
                     continue
 
@@ -63,12 +63,12 @@ class Root:
             minedgesize = 1
             maxedgesize = 10
 
-            colors = {'center':'#ff0000', 'c': "#222" , 'p': "#222",'r': "#32883c" ,'l': "#32883c",'t': '#323288','R':'#2e7469','L':'#2e7469' }
+            colors = {'center':'#ff0000', 'c': "#333" , 'p': "#666",'r': "#3e6442" ,'l': "#5e9865",'t': '#323288','R':'#2e7469','L':'#2e7469' }
             extra = {'c': "arrow: 'target'",'p':"arrow: 'source'", 'l':  "arrow: 'source'" ,'r':  "arrow: 'target'", 'L':  "arrow: 'source'" ,'R':  "arrow: 'target'", 't': "arrow: 'source'"}
 
-            processrelations('c',self.patternmodel.getsubchildren, pattern, threshold, nodes, edges, self.classdecoder, colors, relationtypes,True)
+            processrelations('c',self.patternmodel.getsubchildren, pattern, threshold, nodes, edges, self.classdecoder, colors, relationtypes,True,True)
             processrelations('p',self.patternmodel.getsubparents, pattern,  threshold, nodes, edges, self.classdecoder,  colors,relationtypes,True)
-            processrelations('l',self.patternmodel.getleftneighbours, pattern,  threshold,nodes, edges, self.classdecoder,  colors,relationtypes)
+            processrelations('l',self.patternmodel.getleftneighbours, pattern,  threshold,nodes, edges, self.classdecoder,  colors,relationtypes,False, True)
             processrelations('r',self.patternmodel.getrightneighbours, pattern,  threshold,nodes, edges,self.classdecoder,  colors,relationtypes)
             processrelations('t',self.patternmodel.gettemplates, pattern,  threshold, nodes, edges,self.classdecoder,  colors,relationtypes,True)
             #processrelations('L',self.patternmodel.getleftcooc, pattern, nodes, edges, self.classdecoder,  colors,relationtypes)
@@ -99,7 +99,7 @@ g = {
 
                 jscode += " g.nodes.push({id:'" +  nodeid + "',text: '" + safe(s) + "', label: '" + s + " (" + str(count) + ")', 'size':"+str(size)+",'cluster': '" + type + "', 'color': '" + color + "', 'x': Math.random(),'y': Math.random() });\n"
 
-            for nodeid, frompattern,topattern, type, count in edges:
+            for nodeid, frompattern,topattern, type, count, reverse in edges:
                 if frompattern == pattern:
                     s_from = 'center'
                 else:
@@ -112,7 +112,10 @@ g = {
                 else:
                     e = ""
                 size = count
-                jscode += " g.edges.push({id: '" + s_edgeid + "', type: 'arrow',  source: '" +s_from  + "', target: '" +s_to  + "' ,size:" + str(size) + ", 'color':'" + color + "'" + e + " });\n"
+                if reverse:
+                    jscode += " g.edges.push({id: '" + s_edgeid + "', type: 'arrow',  source: '" +s_to  + "', target: '" +s_from  + "' ,size:" + str(size) + ", 'color':'" + color + "'" + e + " });\n"
+                else:
+                    jscode += " g.edges.push({id: '" + s_edgeid + "', type: 'arrow',  source: '" +s_from  + "', target: '" +s_to  + "' ,size:" + str(size) + ", 'color':'" + color + "'" + e + " });\n"
 
             jscode += "sigma.settings.labelThreshold = 6;\n";
             jscode += "sigma.settings.minNodeSize = " + str(minnodesize) + ";\n";
